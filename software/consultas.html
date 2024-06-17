@@ -1,0 +1,143 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultas Históricas - Taller Mecánico</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        label {
+            margin-top: 10px;
+        }
+
+        input {
+            padding: 10px;
+            margin-top: 5px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+            button:hover {
+                background-color: #0056b3;
+            }
+
+        .result {
+            display: none;
+            margin-top: 20px;
+        }
+
+            .result table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .result th, .result td {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+
+            .result th {
+                background-color: #f2f2f2;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Consultas Históricas</h1>
+        <form id="searchForm">
+            <label for="searchQuery">Buscar por Nombre del Cliente, Teléfono, Email, Servicio, Fecha o Hora:</label>
+            <input type="text" id="searchQuery" name="searchQuery" required>
+
+            <button type="submit">Buscar</button>
+        </form>
+        <div class="result" id="resultContainer">
+            <h2>Resultados de la Búsqueda:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Cita</th>
+                        <th>Nombre del Cliente</th>
+                        <th>Teléfono</th>
+                        <th>Email</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Servicio</th>
+                    </tr>
+                </thead>
+                <tbody id="resultBody">
+                    <!-- Los resultados se mostrarán aquí -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const searchQuery = document.getElementById('searchQuery').value;
+
+            fetch(`http://localhost:3000/api/consultas?q=${encodeURIComponent(searchQuery)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultBody = document.getElementById('resultBody');
+                    resultBody.innerHTML = '';
+
+                    if (data.length > 0) {
+                        data.forEach(item => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${item.ID}</td>
+                                <td>${item.Nombre}</td>
+                                <td>${item.Telefono}</td>
+                                <td>${item.Email}</td>
+                                <td>${item.Fecha}</td>
+                                <td>${item.Hora}</td>
+                                <td>${item.Servicio}</td>
+                            `;
+                            resultBody.appendChild(row);
+                        });
+                    } else {
+                        const row = document.createElement('tr');
+                        row.innerHTML = '<td colspan="7" style="text-align: center;">No se encontraron resultados</td>';
+                        resultBody.appendChild(row);
+                    }
+
+                    // Mostrar resultados
+                    document.getElementById('resultContainer').style.display = 'block';
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Autos - Taller Mecánico</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-top: 10px;
+        }
+
+        input {
+            padding: 10px;
+            margin-top: 5px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+            button:hover {
+                background-color: #0056b3;
+            }
+
+        .success-message, .error-message {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .success-message {
+            color: green;
+        }
+
+        .error-message {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registro de Autos</h1>
+        <form id="carForm">
+            <label for="customerId">ID del Cliente:</label>
+            <input type="text" id="customerId" name="customerId" required>
+
+            <label for="brand">Marca:</label>
+            <input type="text" id="brand" name="brand" required>
+
+            <label for="model">Modelo:</label>
+            <input type="text" id="model" name="model" required>
+
+            <label for="year">Año:</label>
+            <input type="text" id="year" name="year" required>
+
+            <label for="licensePlate">Placa:</label>
+            <input type="text" id="licensePlate" name="licensePlate" required>
+
+            <button type="submit">Registrar Auto</button>
+        </form>
+        <div class="success-message" id="successMessage">
+            ¡El auto ha sido registrado con éxito!
+        </div>
+        <div class="error-message" id="errorMessage">
+            No se pudo registrar el auto. Por favor, verifique los datos e intente nuevamente.
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('carForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const customerId = document.getElementById('customerId').value;
+            const brand = document.getElementById('brand').value;
+            const model = document.getElementById('model').value;
+            const year = document.getElementById('year').value;
+            const licensePlate = document.getElementById('licensePlate').value;
+
+            fetch('http://localhost:3000/api/registrar-auto', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    customerId: customerId,
+                    brand: brand,
+                    model: model,
+                    year: year,
+                    licensePlate: licensePlate
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('errorMessage').style.display = 'none';
+                    document.getElementById('carForm').reset();
+                } else {
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('successMessage').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('successMessage').style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

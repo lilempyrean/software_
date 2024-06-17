@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultas de Registros - Taller Mecánico</title>
+    <style>
+        /* Estilos omitidos para brevedad */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Consultas de Registros</h1>
+        <form id="searchForm">
+            <input type="text" id="searchQuery" placeholder="Buscar...">
+            <button type="submit">Buscar</button>
+        </form>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Email</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Servicio</th>
+                </tr>
+            </thead>
+            <tbody id="resultsTable">
+                <!-- Los resultados de la búsqueda se mostrarán aquí -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const searchQuery = document.getElementById('searchQuery').value;
+            fetch(`http://localhost:3000/api/consultas?q=${searchQuery}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsTable = document.getElementById('resultsTable');
+                    resultsTable.innerHTML = '';
+                    data.forEach(record => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${record.ID}</td>
+                            <td>${record.Nombre}</td>
+                            <td>${record.Telefono}</td>
+                            <td>${record.Email}</td>
+                            <td>${record.Fecha}</td>
+                            <td>${record.Hora}</td>
+                            <td>${record.Servicio}</td>
+                        `;
+                        resultsTable.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+</body>
+</html>

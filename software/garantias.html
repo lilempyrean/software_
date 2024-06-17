@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validación de Garantías - Taller Mecánico</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-top: 10px;
+        }
+
+        input {
+            padding: 10px;
+            margin-top: 5px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+            button:hover {
+                background-color: #0056b3;
+            }
+
+        .success-message, .error-message {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .success-message {
+            color: green;
+        }
+
+        .error-message {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Validación de Garantías</h1>
+        <form id="warrantyForm">
+            <label for="appointmentId">ID de la Cita:</label>
+            <input type="text" id="appointmentId" name="appointmentId" required>
+
+            <label for="name">Nombre del Cliente:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="service">Servicio:</label>
+            <input type="text" id="service" name="service" required>
+
+            <button type="submit">Validar Garantía</button>
+        </form>
+        <div class="success-message" id="successMessage">
+            ¡La garantía ha sido validada con éxito!
+        </div>
+        <div class="error-message" id="errorMessage">
+            No se pudo validar la garantía. Por favor, verifique los datos e intente nuevamente.
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('warrantyForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const appointmentId = document.getElementById('appointmentId').value;
+            const name = document.getElementById('name').value;
+            const service = document.getElementById('service').value;
+
+            fetch('http://localhost:3000/api/validar-garantia', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    appointmentId: appointmentId,
+                    name: name,
+                    service: service
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('errorMessage').style.display = 'none';
+                    document.getElementById('warrantyForm').reset();
+                } else {
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('successMessage').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('successMessage').style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
